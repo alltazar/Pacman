@@ -10,10 +10,9 @@ public class VisualComponent  extends JComponent implements ActionListener {
     boolean looser = false;
 
     java.util.List<DataModel> allModels;
+    java.util.List<BadCircle> badModels;
     HashSet<EatModel> eatModels;
     Circle1 c1;
-    BadCircle bc1;
-    BadCircle bc2;
 
     VisualComponent(){
         allModels = new ArrayList<>();
@@ -68,9 +67,9 @@ public class VisualComponent  extends JComponent implements ActionListener {
 
         c1 = new Circle1(1,1,48);
 
-        bc1 = new BadCircle(551,1,48);
-
-        bc2 = new BadCircle(551,251,48);
+        badModels = new ArrayList<>();
+        badModels.add(new BadCircle(551,1,48));
+        badModels.add(new BadCircle(551,251,48));
 
         timer.start();
 
@@ -81,9 +80,10 @@ public class VisualComponent  extends JComponent implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource()==timer){
-            bc1.move(bc1,this);
 
-            bc2.move(bc2,this);
+            for (BadCircle bc : badModels){
+                bc.move(this);
+            }
             repaint();
         }
     }
@@ -95,17 +95,17 @@ public class VisualComponent  extends JComponent implements ActionListener {
         g.setColor(Color.blue);
 
         for (DataModel dm : allModels){
-            g.setColor(dm.color_);
-            g.fillRect(dm.x_,dm.y_,dm.w_,dm.h_);
+            dm.paint(g);
         }
 
-        c1.paint(g,c1);
+        c1.paint(g);
 
-        bc1.paint(g,bc1);
-        bc2.paint(g,bc2);
+        for (BadCircle bc : badModels){
+            bc.paint(g);
+        }
 
         for (EatModel em : eatModels){
-            em.paint(g,em);
+            em.paint(g);
         }
 
         if (winner){
@@ -116,6 +116,23 @@ public class VisualComponent  extends JComponent implements ActionListener {
         if (looser){
             g.setColor(Color.BLACK);
             g.fillRect(0,0,600,350);
+        }
+    }
+
+    void checkForEnd(){
+        int cWidth = c1.getX_() + c1.getR_();
+        int cHeight = c1.getY_() + c1.getR_();
+        EatModel del = null;
+        for (EatModel em : eatModels) {
+            if (em.getX_() >= c1.getX_() && em.getX_() <= cWidth && em.getY_() >= c1.getY_() && em.getY_() <= cHeight) {
+                del = em;
+            }
+        }
+        if (del != null) {
+            eatModels.remove(del);
+        }
+        if (eatModels.size() == 0) {
+            winner = true;
         }
     }
 }

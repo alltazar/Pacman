@@ -1,6 +1,5 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -9,8 +8,6 @@ public class Main {
 
         VisualComponent paintComponent = new VisualComponent();
         contentPanel.add(paintComponent, BorderLayout.CENTER);
-        Controller2 controller2 = new Controller2(paintComponent);
-        paintComponent.addKeyListener(controller2);
 
         JFrame frame = new JFrame("Paint Test");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -23,3 +20,4 @@ public class Main {
         frame.setVisible(true);
     }
 }
+

@@ -4,7 +4,9 @@ import java.awt.event.KeyListener;
 
 public class AddKeylistener {
     public static void add(JFrame jf, VisualComponent paintComponent){
+
         jf.addKeyListener(new KeyListener() {
+
             @Override
             public void keyTyped(KeyEvent e) {
 
@@ -12,124 +14,104 @@ public class AddKeylistener {
 
             @Override
             public void keyPressed(KeyEvent e) {
+
+                Circle1 c = paintComponent.c1;
+                int speed = 5;
+                int width = 600;
+                int height = 350;
+                int cWidth = c.getX_() + c.getR_();
+                int cHeight = c.getY_() + c.getR_();
+
                 if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
                     boolean ok = true;
                     for (DataModel dm : paintComponent.allModels) {
-                        if (paintComponent.c1.x_ + paintComponent.c1.r_ + 5 > 600 || (paintComponent.c1.x_ + paintComponent.c1.r_ + 5 >= dm.x_
-                                && paintComponent.c1.x_ + 5 + paintComponent.c1.r_ <= dm.w_ + dm.x_
+
+                        int dWidth = dm.getX_() + dm.getW_();
+                        int dHeight = dm.getY_() + dm.getH_();
+
+                        if (cWidth + speed > width || (cWidth + speed >= dm.getX_()
+                                && cWidth + speed <= dWidth
                                 && (
-                                (paintComponent.c1.y_ >= dm.y_ && paintComponent.c1.y_ <= dm.h_ + dm.y_)
+                                (c.getY_() >= dm.getY_() && c.getY_() <= dHeight)
                                         ||
-                                        (paintComponent.c1.y_ + paintComponent.c1.r_ >= dm.y_ && paintComponent.c1.y_ + paintComponent.c1.r_ <= dm.y_ + dm.h_)))) {
+                                        (cHeight >= dm.getY_() && cHeight <= dHeight)))) {
                             ok = false;
                         }
                     }
                     if (ok) {
-                        paintComponent.c1.x_ += 5;
+                        c.speedX(speed);
                         paintComponent.repaint();
                     }
-                    EatModel del = null;
-                    for (EatModel em : paintComponent.eatModels) {
-                        if (em.x_ >= paintComponent.c1.x_ && em.x_ <= paintComponent.c1.x_ + paintComponent.c1.r_ && em.y_ >= paintComponent.c1.y_ && em.y_ <= paintComponent.c1.y_ + paintComponent.c1.r_) {
-                            del = em;
-                        }
-                    }
-                    if (del != null) {
-                        paintComponent.eatModels.remove(del);
-                    }
-                    if (paintComponent.eatModels.size() == 0) {
-                        paintComponent.winner = true;
-                    }
+                    paintComponent.checkForEnd();
 
                 }
                 if (e.getKeyCode() == KeyEvent.VK_LEFT) {
                     boolean ok = true;
                     for (DataModel dm : paintComponent.allModels) {
-                        if (paintComponent.c1.x_ - 5 < 0 || (paintComponent.c1.x_ - 5 <= dm.x_ + dm.w_
-                                && paintComponent.c1.x_ - 5 >= dm.x_
+
+                        int dWidth = dm.getX_() + dm.getW_();
+                        int dHeight = dm.getY_() + dm.getH_();
+
+                        if (c.getX_() - speed < 0 || (c.getX_() - speed <= dWidth
+                                && c.getX_() - speed >= dm.getX_()
                                 && (
-                                (paintComponent.c1.y_ >= dm.y_ && paintComponent.c1.y_ <= dm.h_ + dm.y_)
+                                (c.getY_() >= dm.getY_() && c.getY_() <= dHeight)
                                         ||
-                                        (paintComponent.c1.y_ + paintComponent.c1.r_ >= dm.y_ && paintComponent.c1.y_ + paintComponent.c1.r_ <= dm.y_ + dm.h_)))) {
+                                        (cHeight >= dm.getY_() && cHeight <= dHeight)))) {
                             ok = false;
                         }
                     }
                     if (ok) {
-                        paintComponent.c1.x_ -= 5;
+                        c.speedX(-speed);
                         paintComponent.repaint();
                     }
-                    EatModel del = null;
-                    for (EatModel em : paintComponent.eatModels) {
-                        if (em.x_ >= paintComponent.c1.x_ && em.x_ <= paintComponent.c1.x_ + paintComponent.c1.r_ && em.y_ >= paintComponent.c1.y_ && em.y_ <= paintComponent.c1.y_ + paintComponent.c1.r_) {
-                            del = em;
-                        }
-                    }
-                    if (del != null) {
-                        paintComponent.eatModels.remove(del);
-                    }
-                    if (paintComponent.eatModels.size() == 0) {
-                        paintComponent.winner = true;
-                    }
+                    paintComponent.checkForEnd();
                 }
                 if (e.getKeyCode() == KeyEvent.VK_UP) {
                     boolean ok = true;
                     for (DataModel dm : paintComponent.allModels) {
-                        if (paintComponent.c1.y_ - 5 < 0 || (paintComponent.c1.y_ - 5 <= dm.y_ + dm.h_
-                                && paintComponent.c1.y_ - 5 >= dm.y_
+
+                        int dWidth = dm.getX_() + dm.getW_();
+                        int dHeight = dm.getY_() + dm.getH_();
+
+                        if (c.getY_() - speed < 0 || (c.getY_() - speed <= dHeight
+                                && c.getY_() - speed >= dm.getY_()
                                 && (
-                                (paintComponent.c1.x_ >= dm.x_ && paintComponent.c1.x_ <= dm.x_ + dm.w_)
+                                (c.getX_() >= dm.getX_() && c.getX_() <= dWidth)
                                         ||
-                                        (paintComponent.c1.x_ + paintComponent.c1.r_ >= dm.x_ && paintComponent.c1.x_ + paintComponent.c1.r_ <= dm.x_ + dm.w_)))) {
+                                        (cWidth >= dm.getX_() && cWidth <= dWidth)))) {
                             ok = false;
 
                         }
                     }
                     if (ok) {
-                        paintComponent.c1.y_ -= 5;
+                        c.speedY(-speed);
                         paintComponent.repaint();
                     }
-                    EatModel del = null;
-                    for (EatModel em : paintComponent.eatModels) {
-                        if (em.x_ >= paintComponent.c1.x_ && em.x_ <= paintComponent.c1.x_ + paintComponent.c1.r_ && em.y_ >= paintComponent.c1.y_ && em.y_ <= paintComponent.c1.y_ + paintComponent.c1.r_) {
-                            del = em;
-                        }
-                    }
-                    if (del != null) {
-                        paintComponent.eatModels.remove(del);
-                    }
-                    if (paintComponent.eatModels.size() == 0) {
-                        paintComponent.winner = true;
-                    }
+                    paintComponent.checkForEnd();
                 }
                 if (e.getKeyCode() == KeyEvent.VK_DOWN) {
                     boolean ok = true;
                     for (DataModel dm : paintComponent.allModels) {
-                        if (paintComponent.c1.y_ + paintComponent.c1.r_ + 5 > 350 || (paintComponent.c1.y_ + paintComponent.c1.r_ + 5 <= dm.y_ + dm.h_
-                                && paintComponent.c1.y_ + paintComponent.c1.r_ + 5 >= dm.y_
+
+                        int dWidth = dm.getX_() + dm.getW_();
+                        int dHeight = dm.getY_() + dm.getH_();
+
+                        if (cHeight + speed > height || (cHeight + speed <= dHeight
+                                && cHeight + speed >= dm.getY_()
                                 && (
-                                (paintComponent.c1.x_ >= dm.x_ && paintComponent.c1.x_ <= dm.x_ + dm.w_)
+                                (c.getX_() >= dm.getX_() && c.getX_() <= dWidth)
                                         ||
-                                        (paintComponent.c1.x_ + paintComponent.c1.r_ >= dm.x_ && paintComponent.c1.x_ + paintComponent.c1.r_ <= dm.x_ + dm.w_)))) {
+                                        (cWidth >= dm.getX_() && cWidth <= dWidth)))) {
                             ok = false;
 
                         }
                     }
                     if (ok) {
-                        paintComponent.c1.y_ += 5;
+                        c.speedY(speed);
                         paintComponent.repaint();
                     }
-                    EatModel del = null;
-                    for (EatModel em : paintComponent.eatModels) {
-                        if (em.x_ >= paintComponent.c1.x_ && em.x_ <= paintComponent.c1.x_ + paintComponent.c1.r_ && em.y_ >= paintComponent.c1.y_ && em.y_ <= paintComponent.c1.y_ + paintComponent.c1.r_) {
-                            del = em;
-                        }
-                    }
-                    if (del != null) {
-                        paintComponent.eatModels.remove(del);
-                    }
-                    if (paintComponent.eatModels.size() == 0) {
-                        paintComponent.winner = true;
-                    }
+                    paintComponent.checkForEnd();
                 }
 
             }

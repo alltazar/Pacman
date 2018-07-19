@@ -1,138 +1,155 @@
+import org.junit.jupiter.api.Test;
+
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 public class BadCircle{
-    int x_;
-    int y_;
-    int r_;
+    private int x_;
+    private int y_;
+    private int r_;
 
-    Integer up = new Integer(1);
-    Integer right = new Integer(1);
-    Integer down = new Integer(1);
-    Integer left = new Integer(1);
+    final int speed = 5;
+    final int width = 600;
+    final int height = 350;
 
-    int way;
-    int ways;
+    private Integer up = new Integer(1);
+    private Integer right = new Integer(1);
+    private Integer down = new Integer(1);
+    private Integer left = new Integer(1);
 
-    Random rand = new Random();
+    private int way;
+    private int ways;
+
+    private Random rand = new Random();
 
     List<Integer> waysarr = new ArrayList<>();
 
-    Color color_ = Color.BLUE;
+    private Color color_ = Color.BLUE;
 
     BadCircle(int x, int y, int r){x_=x;y_=y;r_=r;}
 
-    void paint(Graphics g, BadCircle e){
+    void paint(Graphics g){
         g.setColor(color_);
-        g.fillOval(e.x_,e.y_,e.r_,e.r_);
+        g.fillOval(x_,y_,r_,r_);
     }
 
-    void move(BadCircle bc, VisualComponent vc){
+    void checkState(VisualComponent vc){
+        int bcWidth = x_ + r_;
+        int bcHeight = y_ + r_;
+        Circle1 c = vc.c1;
+        int cWidth = c.getX_() + c.getR_();
+        int cHeight = c.getY_() + c.getR_();
+
+        if (x_-1 <= cWidth && x_-1 >= c.getX_() && ((y_ >= c.getY_() && y_ <= cHeight) || (bcHeight >= c.getY_() && bcHeight <= cHeight)) ){
+            vc.looser = true;
+        }
+        if (bcWidth+1 >=c.getX_() && bcWidth+1 <= cWidth && ((bcHeight >= c.getY_() && bcHeight <= cHeight) || (y_>= c.getY_() && y_<= cHeight)) ){
+            vc.looser = true;
+        }
+        if (y_-1 >=c.getY_() && y_-1 <= cHeight && ((bcWidth >= c.getX_() && bcWidth <= cWidth) || (x_>= c.getX_() && x_<= cWidth)) ){
+            vc.looser = true;
+        }
+        if (bcHeight+1 >=c.getY_() && bcHeight+1 <= cHeight && ((bcWidth >= c.getX_() && bcWidth <= cWidth) || (x_>= c.getX_() && x_<= cWidth)) ){
+            vc.looser = true;
+        }
+    }
+
+    void move(VisualComponent vc){
+
         for (DataModel dm : vc.allModels) {
-            if (bc.x_ + bc.r_ + 5 > 600 || (bc.x_ + bc.r_ + 5 >= dm.x_
-                    && bc.x_ + 5 + bc.r_ <= dm.w_ + dm.x_
+
+            int bcWidth = x_ + r_;
+            int bcHeight = y_ + r_;
+            int dWidth = dm.getX_() + dm.getW_();
+            int dHeight = dm.getY_() + dm.getH_();
+
+            checkState(vc);
+
+            if (bcWidth + speed > width || (bcWidth + speed >= dm.getX_()
+                    && bcWidth + speed <= dWidth
                     && (
-                    (bc.y_ >= dm.y_&& bc.y_ <= dm.h_ + dm.y_)
+                    (y_ >= dm.getY_()&& y_ <= dHeight)
                             ||
-                            (bc.y_ + bc.r_ >= dm.y_ && bc.y_ + bc.r_ <= dm.y_ + dm.h_)))) {
-
-                bc.right = new Integer(0);
-
+                            (bcHeight >= dm.getY_() && bcHeight <= dHeight)))) {
+                right = new Integer(0);
             }
 
-            if (bc.x_-1<=vc.c1.x_+vc.c1.r_ && bc.x_-1>=vc.c1.x_ && ((bc.y_ >= vc.c1.y_ && bc.y_ <= vc.c1.y_ + vc.c1.r_) || (bc.y_ + bc.r_>= vc.c1.y_ && bc.y_ + bc.r_<= vc.c1.y_ + vc.c1.r_)) ){
-                vc.looser = true;
-            }
-
-            if (bc.x_ - 5 < 0 || (bc.x_ - 5 <= dm.x_ + dm.w_
-                    && bc.x_ - 5 >= dm.x_
+            if (x_ - speed < 0 || (x_ - speed <= dWidth
+                    && x_ - speed >= dm.getX_()
                     && (
-                    (bc.y_ >= dm.y_&& bc.y_ <= dm.h_ + dm.y_)
+                    (y_ >= dm.getY_()&& y_ <= dHeight)
                             ||
-                            (bc.y_ + bc.r_ >= dm.y_ && bc.y_ + bc.r_ <= dm.y_+dm.h_)))) {
-
-                bc.left = new Integer(0);
-
-
-            }
-            if (bc.x_+bc.r_+1 >=vc.c1.x_ && bc.x_+bc.r_+1 <= vc.c1.x_ + vc.c1.r_ && ((bc.y_ + bc.r_ >= vc.c1.y_ && bc.y_ + bc.r_ <= vc.c1.y_ + vc.c1.r_) || (bc.y_>= vc.c1.y_ && bc.y_<= vc.c1.y_ + vc.c1.r_)) ){
-                vc.looser = true;
+                            (bcHeight >= dm.getY_() && bcHeight <= dHeight)))) {
+                left = new Integer(0);
             }
 
-            if (bc.y_ - 5 < 0 || (bc.y_ - 5 <= dm.y_ + dm.h_
-                    && bc.y_ - 5 >= dm.y_
+            if (y_ - speed < 0 || (y_ - speed <= dHeight
+                    && y_ - speed >= dm.getY_()
                     && (
-                    (bc.x_ >= dm.x_&& bc.x_ <= dm.x_ + dm.w_)
+                    (x_ >= dm.getX_()&& x_ <= dWidth)
                             ||
-                            (bc.x_ + bc.r_ >= dm.x_ && bc.x_ + bc.r_ <= dm.x_+dm.w_)))) {
-
-                bc.up = new Integer(0);
-
-            }
-            if (bc.y_-1 >=vc.c1.y_ && bc.y_-1 <= vc.c1.y_ + vc.c1.r_ && ((bc.x_ + bc.r_ >= vc.c1.x_ && bc.x_ + bc.r_ <= vc.c1.x_ + vc.c1.r_) || (bc.x_>= vc.c1.x_ && bc.x_<= vc.c1.x_ + vc.c1.r_)) ){
-                vc.looser = true;
+                            (bcWidth >= dm.getX_() && bcWidth <= dWidth)))) {
+                up = new Integer(0);
             }
 
-            if (bc.y_ + bc.r_ + 5 > 350 || (bc.y_ + bc.r_ + 5 <= dm.y_ + dm.h_
-                    && bc.y_ + bc.r_ + 5 >= dm.y_
+            if (bcHeight + speed > height || (bcHeight + speed <= dHeight
+                    && bcHeight + speed >= dm.getY_()
                     && (
-                    (bc.x_ >= dm.x_&& bc.x_ <= dm.x_ + dm.w_)
+                    (x_ >= dm.getX_()&& x_ <= dWidth)
                             ||
-                            (bc.x_ + bc.r_ >= dm.x_ && bc.x_ + bc.r_ <= dm.x_+dm.w_)))) {
-
-                bc.down = new Integer(0);
-
-            }
-            if (bc.y_+bc.r_+1 >=vc.c1.y_ && bc.y_+bc.r_+1 <= vc.c1.y_ + vc.c1.r_ && ((bc.x_ + bc.r_ >= vc.c1.x_ && bc.x_ + bc.r_ <= vc.c1.x_ + vc.c1.r_) || (bc.x_>= vc.c1.x_ && bc.x_<= vc.c1.x_ + vc.c1.r_)) ){
-                vc.looser = true;
+                            (bcWidth >= dm.getX_() && bcWidth <= dWidth)))) {
+                down = new Integer(0);
             }
 
         }
 
-        if (bc.way == 1 && bc.up == 1 && bc.ways == bc.up + bc.right + bc.down + bc.left) {
-            bc.y_-=5;
-        } else if (bc.way == 2 && bc.right == 1 && bc.ways == bc.up + bc.right + bc.down + bc.left){
-            bc.x_+=5;
-        } else if (bc.way == 3 && bc.down == 1 && bc.ways == bc.up + bc.right + bc.down + bc.left){
-            bc.y_+=5;
-        } else if (bc.way == 4 && bc.left == 1 && bc.ways == bc.up + bc.right + bc.down + bc.left){
-            bc.x_-=5;
+        if (way == 1 && up == 1 && ways == up + right + down + left) {
+            y_-=5;
+        } else if (way == 2 && right == 1 && ways == up + right + down + left){
+            x_+=5;
+        } else if (way == 3 && down == 1 && ways == up + right + down + left){
+            y_+=5;
+        } else if (way == 4 && left == 1 && ways == up + right + down + left){
+            x_-=5;
         } else {
-            bc.ways = bc.up + bc.right + bc.down + bc.left;
+            ways = up + right + down + left;
 
-            bc.waysarr.clear();
+            waysarr.clear();
 
-            if (bc.up>0){bc.waysarr.add(bc.up);}
-            if (bc.right>0){bc.waysarr.add(bc.right);}
-            if (bc.down>0){bc.waysarr.add(bc.down);}
-            if (bc.left>0){bc.waysarr.add(bc.left);}
+            if (up>0){waysarr.add(up);}
+            if (right>0){waysarr.add(right);}
+            if (down>0){waysarr.add(down);}
+            if (left>0){waysarr.add(left);}
 
-            int randomNum = rand.nextInt(bc.waysarr.size());
+            int randomNum = rand.nextInt(waysarr.size());
 
-            if (bc.waysarr.get(randomNum) == bc.up){
-                bc.y_-=5;
-                bc.way = 1;
-            } else if (bc.waysarr.get(randomNum) == bc.right){
-                bc.x_+=5;
-                bc.way = 2;
-            } else if (bc.waysarr.get(randomNum) == bc.down){
-                bc.y_+=5;
-                bc.way = 3;
-            } else if (bc.waysarr.get(randomNum) == bc.left){
-                bc.x_-=5;
-                bc.way = 4;
+            if (waysarr.get(randomNum) == up){
+                y_-=5;
+                way = 1;
+            } else if (waysarr.get(randomNum) == right){
+                x_+=5;
+                way = 2;
+            } else if (waysarr.get(randomNum) == down){
+                y_+=5;
+                way = 3;
+            } else if (waysarr.get(randomNum) == left){
+                x_-=5;
+                way = 4;
             }
 
 
         }
 
 
-        bc.up =new Integer(1);
-        bc.left=new Integer(1);
-        bc.down=new Integer(1);
-        bc.right=new Integer(1);
+        up =new Integer(1);
+        left=new Integer(1);
+        down=new Integer(1);
+        right=new Integer(1);
 
     }
 }
